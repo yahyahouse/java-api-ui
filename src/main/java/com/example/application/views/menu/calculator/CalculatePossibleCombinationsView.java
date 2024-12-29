@@ -6,6 +6,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
@@ -29,6 +30,11 @@ public class CalculatePossibleCombinationsView extends Composite<VerticalLayout>
     public CalculatePossibleCombinationsView() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
         H3 h3 = new H3();
+        Paragraph textMedium = new Paragraph();
+        textMedium.setText(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+        textMedium.setWidth("100%");
+        textMedium.getStyle().set("font-size", "var(--lumo-font-size-m)");
         FormLayout formLayout2Col = new FormLayout();
         TextField word = new TextField();
         HorizontalLayout layoutRow = new HorizontalLayout();
@@ -64,6 +70,7 @@ public class CalculatePossibleCombinationsView extends Composite<VerticalLayout>
         result.setWidth("min-content");
         getContent().add(layoutColumn2);
         layoutColumn2.add(h3);
+        layoutColumn2.add(textMedium);
         layoutColumn2.add(formLayout2Col);
         formLayout2Col.add(word);
         layoutColumn2.add(layoutRow);
