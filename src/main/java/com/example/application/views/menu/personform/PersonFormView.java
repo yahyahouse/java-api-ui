@@ -1,4 +1,4 @@
-package com.example.application.views.personform;
+package com.example.application.views.menu.personform;
 
 import com.example.application.model.Users;
 import com.example.application.service.UsersService;
@@ -6,7 +6,6 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
@@ -23,7 +22,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
-
 
 
 @PageTitle("Person Form")
@@ -81,14 +79,20 @@ public class PersonFormView extends Composite<VerticalLayout> {
         layoutRow.add(buttonPrimary);
         layoutRow.add(buttonSecondary);
         buttonPrimary.addClickListener(event -> {
-            Users users = new Users();
-            users.setName(name.getValue());
-            users.setEmail(emailField.getValue());
-            users.setPassword(passwordField.getValue());
-            users.setRole(comboBox.getValue());
-            users.setMessage(message.getValue());
-            usersService.saveUsers(users);
-            Notification.show("User saved successfully");
+            try {
+                Users users = new Users();
+                users.setName(name.getValue());
+                users.setEmail(emailField.getValue());
+                users.setPassword(passwordField.getValue());
+                users.setRole(comboBox.getValue());
+                users.setMessage(message.getValue());
+
+                usersService.saveUsers(users);
+                Notification.show("User saved successfully");
+
+            } catch (RuntimeException e) {
+                Notification.show("Email already exists");
+            }
         });
 
     }

@@ -15,12 +15,23 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public void saveUsers(Users users) {
-        users.setId(UUID.randomUUID().toString());
-        usersRepository.save(users);
+        Users user = usersRepository.findByEmail(users.getEmail());
+        if (user != null) {
+            throw new RuntimeException("Email already exists");
+        }else {
+            users.setId(UUID.randomUUID().toString());
+            usersRepository.save(users);
+        }
+
     }
 
     @Override
     public List<Users> getAllUsers() {
         return usersRepository.getAllUsers();
+    }
+
+    @Override
+    public Users findByEmailAndPassword(String email, String password) {
+        return usersRepository.findByEmailAndPassword(email, password);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.application.views.helloworld;
+package com.example.application.views.menu.helloworld;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -11,16 +11,15 @@ import com.vaadin.flow.router.Route;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
 @PageTitle("Hello World")
-@Route("")
+@Route("hello-world")
 @Menu(order = 0, icon = LineAwesomeIconUrl.GLOBE_SOLID)
 public class HelloWorldView extends HorizontalLayout {
 
-    private TextField name;
-    private Button sayHello;
+    private final TextField name;
 
     public HelloWorldView() {
         name = new TextField("Your name");
-        sayHello = new Button("Say hello");
+        Button sayHello = new Button("Say hello");
         sayHello.addClickListener(e -> {
             Notification.show("Hello " + name.getValue());
         });

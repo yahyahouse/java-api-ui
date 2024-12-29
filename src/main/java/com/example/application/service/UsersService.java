@@ -10,4 +10,5 @@ import java.util.List;
 public interface UsersService {
     void saveUsers(Users users);
     List<Users> getAllUsers();
+    Users findByEmailAndPassword(String email, String password);
 }

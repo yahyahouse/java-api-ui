@@ -12,4 +12,7 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     @Query(value = "SELECT * FROM users", nativeQuery = true)
     List<Users> getAllUsers();
 
+    Users findByEmailAndPassword(String email, String password);
+    Users findByEmail(String email);
+
 }

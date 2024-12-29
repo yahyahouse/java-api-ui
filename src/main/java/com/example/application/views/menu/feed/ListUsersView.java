@@ -1,4 +1,4 @@
-package com.example.application.views.feed;
+package com.example.application.views.menu.feed;
 
 import com.example.application.model.Users;
 import com.example.application.service.UsersService;
@@ -20,16 +20,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
-@PageTitle("Feed")
-@Route("feed")
+@PageTitle("List Users")
+@Route("list-users")
 @Menu(order = 2, icon = LineAwesomeIconUrl.LIST_SOLID)
-public class FeedView extends Div implements AfterNavigationObserver {
+public class ListUsersView extends Div implements AfterNavigationObserver {
     @Autowired
     private UsersService usersService;
 
     Grid<Users> grid = new Grid<>();
 
-    public FeedView() {
+    public ListUsersView() {
         addClassName("feed-view");
         setSizeFull();
         grid.setHeight("100%");
