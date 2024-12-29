@@ -1,8 +1,10 @@
 package com.example.application.views.menu;
 
 import com.example.application.model.Login;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
@@ -65,8 +67,18 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     private Footer createFooter() {
+        Footer footer = new Footer();
 
-        return new Footer();
+        Button logoutButton = new Button("Logout");
+        logoutButton.addClickListener(e -> {
+            UI.getCurrent().getSession().close();
+            UI.getCurrent().navigate("login");
+            Login.setLoggedIn(false);
+        });
+        logoutButton.addClassName("logout-button");
+        footer.add(logoutButton);
+
+        return footer;
     }
 
     @Override

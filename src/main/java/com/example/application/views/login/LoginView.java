@@ -27,7 +27,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        H1 title = new H1("Welcome to Vaadin App");
+        H1 title = new H1("Welcome to M App");
 
         // Login Form
         LoginForm loginForm = new LoginForm();
@@ -43,7 +43,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             // Replace with your actual authentication logic
             if (user != null) {
                 Login.setLoggedIn(true); // Set login state
-                Notification.show("Login successful!");
+                Notification.show("Login successful!",2000,Notification.Position.BOTTOM_CENTER);
                 loginForm.getUI().ifPresent(ui -> ui.navigate("hello-world")); // Redirect to home
             } else {
                 loginForm.setError(true); // Show error message
