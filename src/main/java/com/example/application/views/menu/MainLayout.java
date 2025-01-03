@@ -11,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.SvgIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
@@ -26,7 +27,7 @@ import java.util.List;
 
 
 @Layout
-public class MainLayout extends AppLayout implements BeforeEnterObserver{
+public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterNavigationObserver{
 
     @Autowired
     private UsersService usersService;
@@ -83,12 +84,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
         logoutButton.addClickListener(e -> {
             UI.getCurrent().getSession().close();
             UI.getCurrent().navigate("login");
-            VaadinSession.getCurrent().setAttribute("user", null);
-            VaadinSession.getCurrent().setAttribute("jwt", null);
+            logout();
+            Notification.show("Logout successful", 3000, Notification.Position.BOTTOM_CENTER);
 
             Login.setLoggedIn(false);
-            VaadinSession.getCurrent().setAttribute("jwt", null); // Clears JWT token from the Vaadin session
-            VaadinSession.getCurrent().close();
         });
         logoutButton.addClassName("logout-button");
         footer.add(logoutButton);
@@ -108,17 +107,42 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver{
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        String token = (String) VaadinSession.getCurrent().getAttribute("jwt");
-        String email = (String) VaadinSession.getCurrent().getAttribute("user");
-
-        if (token == null || email == null) {
-            beforeEnterEvent.forwardTo("login");
-            return;
-        }
-
-        Users user = usersService.findByEmail(email);
-        if (user == null || !jwtUtil.isTokenValid(token, user)) {
+        checkTokenValidity();
+        if (VaadinSession.getCurrent().getAttribute("jwt") == null) {
             beforeEnterEvent.forwardTo("login");
         }
+    }
+    @Override
+    public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
+        checkTokenValidity();
+    }
+    private void checkTokenValidity() {
+        try {
+            String token = (String) VaadinSession.getCurrent().getAttribute("jwt");
+            String email = (String) VaadinSession.getCurrent().getAttribute("user");
+
+            if (token == null || email == null) {
+                logout();
+                return;
+            }
+
+            Users user = usersService.findByEmail(email);
+            if (user == null || !jwtUtil.isTokenValid(token, user)) {
+                Notification.show("Invalid Authentication", 3000, Notification.Position.BOTTOM_CENTER);
+                logout();
+            }
+        } catch (IllegalStateException e) {
+            // Handle expired token exception
+            Notification.show("Token Expired", 3000, Notification.Position.BOTTOM_CENTER);
+            logout();
+        }
+    }
+    private void logout() {
+
+        VaadinSession.getCurrent().setAttribute("user", null);
+        VaadinSession.getCurrent().setAttribute("jwt", null);
+        VaadinSession.getCurrent().close();
+        UI.getCurrent().getPage().setLocation("login");
+        Login.setLoggedIn(false);
     }
 }

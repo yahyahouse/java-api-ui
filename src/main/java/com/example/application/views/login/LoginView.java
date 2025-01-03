@@ -82,15 +82,23 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         String token = (String) VaadinSession.getCurrent().getAttribute("jwt");
         String email = (String) VaadinSession.getCurrent().getAttribute("user");
+
         if (token == null || email == null) {
             beforeEnterEvent.forwardTo("login");
-        } else {
-            Users user = usersService.findByEmail(email);
-            if (user != null && jwtUtil.isTokenValid(token, user)) {
-                beforeEnterEvent.forwardTo("hello-world");
-            } else {
+            return;
+        }
+
+        Users user = usersService.findByEmail(email);
+
+        try {
+            if (user == null || !jwtUtil.isTokenValid(token, user)) {
                 beforeEnterEvent.forwardTo("login");
             }
+        } catch (IllegalStateException e) {
+            // Handle token expiration gracefully
+            VaadinSession.getCurrent().setAttribute("jwt", null);
+            VaadinSession.getCurrent().setAttribute("user", null);
+            beforeEnterEvent.forwardTo("login");
         }
     }
 
