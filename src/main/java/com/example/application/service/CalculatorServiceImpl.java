@@ -1,14 +1,33 @@
 package com.example.application.service;
 
+import com.example.application.model.ResultPossibility;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CalculatorServiceImpl implements CalculatorService {
     @Override
-    public int calculatePossibleCombinations(String input) {
+    public ResultPossibility calculatePossibleCombinations(String input) {
+        ResultPossibility resultPossibility = new ResultPossibility();
         int n = input.length();
-        int base=2;
-        return (int) Math.pow(base, n-1);
+        int base = 2;
+        resultPossibility.setResult((int) Math.pow(base, n - 1));
+
+        List<String> combinations = new ArrayList<>();
+        for (int i = 0; i < resultPossibility.getResult(); i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < n; j++) {
+                sb.append(input.charAt(j));
+                if (j < n - 1 && (i & (1 << j)) != 0) {
+                    sb.append('.');
+                }
+            }
+            combinations.add(sb.toString());
+        }
+        resultPossibility.setPossibilities(combinations);
+        return resultPossibility;
     }
 
     @Override

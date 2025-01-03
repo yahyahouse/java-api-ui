@@ -1,7 +1,9 @@
 package com.example.application.service;
 
+import com.example.application.model.ResultPossibility;
+
 public interface CalculatorService {
-    int calculatePossibleCombinations(String input);
+    ResultPossibility calculatePossibleCombinations(String input);
     int add(int a, int b);
     int subtract(int a, int b);
     int multiply(int a, int b);

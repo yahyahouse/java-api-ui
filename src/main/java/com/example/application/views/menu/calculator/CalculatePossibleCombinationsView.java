@@ -1,10 +1,12 @@
 package com.example.application.views.menu.calculator;
 
+import com.example.application.model.ResultPossibility;
 import com.example.application.service.CalculatorService;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
@@ -19,6 +21,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @PageTitle("Calculate Possible Combinations")
 @Route(value = "calculate-possible-combinations")
@@ -42,6 +47,7 @@ public class CalculatePossibleCombinationsView extends Composite<VerticalLayout>
         Button buttonSecondary = new Button();
         TextField result = new TextField();
         result.setReadOnly(true);
+        Grid<TablePossibleCombinations> resultPossibleCombinations = new Grid<>(TablePossibleCombinations.class, false);
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         getContent().setJustifyContentMode(JustifyContentMode.START);
@@ -77,10 +83,20 @@ public class CalculatePossibleCombinationsView extends Composite<VerticalLayout>
         layoutRow.add(buttonPrimary);
         layoutRow.add(buttonSecondary);
         layoutColumn2.add(result);
+        layoutColumn2.add(resultPossibleCombinations);
         buttonPrimary.addClickListener(e -> {
-            String resultValue = String.valueOf(calculatorService.calculatePossibleCombinations(word.getValue()));
+            ResultPossibility resultPossibility = calculatorService.calculatePossibleCombinations(word.getValue());
             Notification.show("success", 3000, Notification.Position.BOTTOM_CENTER);
-            result.setValue(resultValue);
+            result.setValue(String.valueOf(resultPossibility.getResult()));
+
+            List<TablePossibleCombinations> rows = new ArrayList<>();
+            List<String> possibilities = resultPossibility.getPossibilities();
+            for (int i = 0; i < possibilities.size(); i++) {
+                rows.add(new TablePossibleCombinations(String.valueOf(i + 1), possibilities.get(i)));
+            }
+            resultPossibleCombinations.addColumn(TablePossibleCombinations::getNumber).setHeader("Number");
+            resultPossibleCombinations.addColumn(TablePossibleCombinations::getCombination).setHeader("Possible Combinations");
+            resultPossibleCombinations.setItems(rows);
         });
         buttonSecondary.addClickListener(e -> {
             word.clear();

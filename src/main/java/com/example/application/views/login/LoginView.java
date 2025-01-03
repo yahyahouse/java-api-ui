@@ -27,7 +27,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        H1 title = new H1("Welcome to M App");
+        H1 title = new H1("Welcome to My App");
 
         // Login Form
         LoginForm loginForm = new LoginForm();
