@@ -1,7 +1,5 @@
 package com.example.application.model;
 
-import lombok.Data;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 
