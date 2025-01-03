@@ -1,28 +1,37 @@
 package com.example.application.views.menu;
 
 import com.example.application.model.Login;
+import com.example.application.model.Users;
+import com.example.application.service.JWTService;
+import com.example.application.service.UsersService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.SvgIcon;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 
+
 @Layout
-public class MainLayout extends AppLayout implements BeforeEnterObserver {
+public class MainLayout extends AppLayout implements BeforeEnterObserver{
+
+    @Autowired
+    private UsersService usersService;
+    @Autowired
+    private JWTService jwtUtil;
     private H1 viewTitle;
 
     public MainLayout() {
@@ -74,7 +83,12 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         logoutButton.addClickListener(e -> {
             UI.getCurrent().getSession().close();
             UI.getCurrent().navigate("login");
+            VaadinSession.getCurrent().setAttribute("user", null);
+            VaadinSession.getCurrent().setAttribute("jwt", null);
+
             Login.setLoggedIn(false);
+            VaadinSession.getCurrent().setAttribute("jwt", null); // Clears JWT token from the Vaadin session
+            VaadinSession.getCurrent().close();
         });
         logoutButton.addClassName("logout-button");
         footer.add(logoutButton);
@@ -94,7 +108,16 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        if (!Login.isLoggedIn()) {
+        String token = (String) VaadinSession.getCurrent().getAttribute("jwt");
+        String email = (String) VaadinSession.getCurrent().getAttribute("user");
+
+        if (token == null || email == null) {
+            beforeEnterEvent.forwardTo("login");
+            return;
+        }
+
+        Users user = usersService.findByEmail(email);
+        if (user == null || !jwtUtil.isTokenValid(token, user)) {
             beforeEnterEvent.forwardTo("login");
         }
     }

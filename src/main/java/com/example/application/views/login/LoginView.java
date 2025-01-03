@@ -2,8 +2,8 @@ package com.example.application.views.login;
 
 import com.example.application.model.Login;
 import com.example.application.model.Users;
+import com.example.application.service.JWTService;
 import com.example.application.service.UsersService;
-import com.example.application.views.menu.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
@@ -12,15 +12,18 @@ import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.server.VaadinSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-@Route(value = "login",autoLayout = false)
-@AnonymousAllowed
+@Route(value = "/login", autoLayout = false)
+@Slf4j
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     @Autowired
     UsersService usersService;
+    @Autowired
+    private JWTService jwtUtil;
     private final LoginForm login = new LoginForm();
 
     public LoginView() {
@@ -40,10 +43,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             String password = event.getPassword();
             Users user = usersService.findByEmailAndPassword(email, password);
 
-            // Replace with your actual authentication logic
             if (user != null) {
+                String token = jwtUtil.generateToken(user);
+                VaadinSession.getCurrent().setAttribute("user", user.getEmail());
+                VaadinSession.getCurrent().setAttribute("jwt", token);
                 Login.setLoggedIn(true); // Set login state
-                Notification.show("Login successful!",2000,Notification.Position.BOTTOM_CENTER);
+                Notification.show("Login successful!", 2000, Notification.Position.BOTTOM_CENTER);
                 loginForm.getUI().ifPresent(ui -> ui.navigate("hello-world")); // Redirect to home
             } else {
                 loginForm.setError(true); // Show error message
@@ -75,8 +80,18 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        if (!Login.isLoggedIn()) {
-            beforeEnterEvent.forwardTo("login"); // Redirect to login if not logged in
+        String token = (String) VaadinSession.getCurrent().getAttribute("jwt");
+        String email = (String) VaadinSession.getCurrent().getAttribute("user");
+        if (token == null || email == null) {
+            beforeEnterEvent.forwardTo("login");
+        } else {
+            Users user = usersService.findByEmail(email);
+            if (user != null && jwtUtil.isTokenValid(token, user)) {
+                beforeEnterEvent.forwardTo("hello-world");
+            } else {
+                beforeEnterEvent.forwardTo("login");
+            }
         }
     }
+
 }

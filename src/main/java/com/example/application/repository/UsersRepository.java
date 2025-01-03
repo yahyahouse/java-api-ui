@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UsersRepository extends JpaRepository<Users, String> {
@@ -13,6 +14,6 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     List<Users> getAllUsers();
 
     Users findByEmailAndPassword(String email, String password);
-    Users findByEmail(String email);
+    Optional<Users> findByEmail(String email);
 
 }

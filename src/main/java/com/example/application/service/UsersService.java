@@ -11,4 +11,5 @@ public interface UsersService {
     void saveUsers(Users users);
     List<Users> getAllUsers();
     Users findByEmailAndPassword(String email, String password);
+    Users findByEmail(String email);
 }

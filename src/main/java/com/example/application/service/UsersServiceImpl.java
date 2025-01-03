@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -15,7 +16,7 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public void saveUsers(Users users) {
-        Users user = usersRepository.findByEmail(users.getEmail());
+        Optional<Users> user = usersRepository.findByEmail(users.getEmail());
         if (user != null) {
             throw new RuntimeException("Email already exists");
         }else {
@@ -33,5 +34,10 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Users findByEmailAndPassword(String email, String password) {
         return usersRepository.findByEmailAndPassword(email, password);
+    }
+
+    @Override
+    public Users findByEmail(String email) {
+        return usersRepository.findByEmail(email).orElse(null);
     }
 }

@@ -101,6 +101,7 @@ public class CalculatePossibleCombinationsView extends Composite<VerticalLayout>
         buttonSecondary.addClickListener(e -> {
             word.clear();
             result.clear();
+            resultPossibleCombinations.removeAllColumns();
         });
     }
 
