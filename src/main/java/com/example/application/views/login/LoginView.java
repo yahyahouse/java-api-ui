@@ -24,7 +24,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     UsersService usersService;
     @Autowired
     private JWTService jwtUtil;
-    private final LoginForm login = new LoginForm();
 
     public LoginView() {
         setSizeFull();
@@ -55,8 +54,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             }
         });
         // Forgot Password Button Action
-        Button forgotPasswordButton = new Button("Forgot Password");
-        forgotPasswordButton.addClickListener(event -> Notification.show("Reset password link sent!"));
+        Button forgotPasswordButton = new Button("Register");
+        forgotPasswordButton.addClickListener(event -> getUI().ifPresent(ui -> ui.navigate("registration")));
 
         forgotPasswordButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
